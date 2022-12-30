@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         seekBarTip.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                Log.i(TAG, "onProgress Changed " + i);
                 tvTipPercentLabel.setText(Integer.toString(i) + "%");
                 computeTipAndTotal();
                 updateTipDescription(i);

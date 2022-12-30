@@ -1,7 +1,10 @@
 package com.hborkowski.tippy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.animation.ArgbEvaluator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,12 +16,13 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = "MainActivity";
-    private Integer initial_tip = 15;
+    private Integer initialTip = 15;
     private EditText etBaseAmount;
     private SeekBar seekBarTip;
     private TextView tvTipPercentLabel;
     private TextView tvTipAmount;
     private TextView tvTotalAmount;
+    private TextView tvTipDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +34,19 @@ public class MainActivity extends AppCompatActivity {
         tvTipPercentLabel = findViewById(R.id.tvTipPercentLabel);
         tvTipAmount = findViewById(R.id.tvTipAmount);
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
+        tvTipDescription = findViewById(R.id.tvTipDescription);
 
 
-        seekBarTip.setProgress(initial_tip);
-        tvTipPercentLabel.setText(Integer.toString(initial_tip) + "%");
+        seekBarTip.setProgress(initialTip);
+        tvTipPercentLabel.setText(Integer.toString(initialTip) + "%");
+        updateTipDescription(initialTip);
         seekBarTip.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 Log.i(TAG, "onProgress Changed " + i);
                 tvTipPercentLabel.setText(Integer.toString(i) + "%");
                 computeTipAndTotal();
+                updateTipDescription(i);
 
             }
 
@@ -70,6 +77,49 @@ public class MainActivity extends AppCompatActivity {
                 computeTipAndTotal();
             }
         });
+    }
+
+    private void updateTipDescription(int tipPercent) {
+
+        switch(tipPercent) {
+            case 0: case 1: case 2: case 3:
+            case 4: case 5: case 6:
+            case 7: case 8: case 9:
+                tvTipDescription.setText("Damn, they suck!");
+                break;
+
+            case 10: case 11: case 12:
+            case 13: case 14:
+                tvTipDescription.setText("They were alright");
+                break;
+
+            case 15: case 16: case 17:
+            case 18: case 19:
+                tvTipDescription.setText("That was good service");
+                break;
+
+            case 20: case 21: case 22:
+            case 23: case 24:
+                tvTipDescription.setText("Damn, I hope I get them again next time!");
+                break;
+
+            case 25: case 26: case 27:
+            case 28: case 29: case 30:
+                tvTipDescription.setText("If I wasn't married, I'd have their child");
+                break;
+        }
+
+        //Update the color based on the tip percentage
+        int color;
+        float tip = tipPercent;
+        ArgbEvaluator evaluator = new ArgbEvaluator();
+        color =  (Integer) evaluator.evaluate(
+                tip / seekBarTip.getMax(),
+                ContextCompat.getColor(this, R.color.color_worst_tip),
+                ContextCompat.getColor(this, R.color.color_best_tip));
+
+        tvTipDescription.setTextColor(color);
+
     }
 
     private void computeTipAndTotal() {
